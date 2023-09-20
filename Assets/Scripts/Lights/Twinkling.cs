@@ -3,11 +3,11 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public class Twinkling : MonoBehaviour {
-
-    private float _maxIntensity;
+    
     [SerializeField] private float minIntensity;
     [SerializeField] bool twinklingActive = true;
 
+    private float _maxIntensity;
     private Light2D _lightComponent;
     
     void Start() {
