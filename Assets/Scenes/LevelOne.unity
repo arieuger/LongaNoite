@@ -10832,7 +10832,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raindropPrefab: {fileID: 4802126985016375143, guid: 7db9ff52e64fed6a9a6c01916970a0e7, type: 3}
-  instantiationPoint: {fileID: 721608770}
+  instantiationPoints:
+  - {fileID: 721608770}
 --- !u!4 &1056638640
 Transform:
   m_ObjectHideFlags: 0

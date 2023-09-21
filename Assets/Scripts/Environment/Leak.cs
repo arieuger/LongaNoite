@@ -1,14 +1,12 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 public class Leak : MonoBehaviour
 {
     [SerializeField] private GameObject raindropPrefab;
-    [SerializeField] private Transform instantiationPoint;
+    [SerializeField] private List<Transform> instantiationPoints;
 
     public static Leak Instance { get; private set; }
     private void Awake() 
@@ -19,17 +17,21 @@ public class Leak : MonoBehaviour
 
     void Start()
     {
-        Instantiate();
+        foreach (var i in instantiationPoints)
+        {
+            StartCoroutine(Instantiate(false, i.position));    
+        }
     }
 
-    public void DestroyAndNew(GameObject destroyDrop)
+    public void DestroyAndNew(GameObject destroyDrop, Vector3 position)
     {
         Destroy(destroyDrop);
-        Invoke(nameof(Instantiate), 3);
+        StartCoroutine(Instantiate(true, position));
     }
 
-    private void Instantiate()
+    private IEnumerator Instantiate(bool staticTime, Vector3 instantiationPosition)
     {
-        Instantiate(raindropPrefab, instantiationPoint.position, Quaternion.identity);
+        yield return new WaitForSeconds(staticTime ? 3f : Random.Range(1f, 3f));
+        Instantiate(raindropPrefab, instantiationPosition, Quaternion.identity);
     }
 }
