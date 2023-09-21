@@ -11,6 +11,7 @@ public class FireflyFlight : MonoBehaviour
     private Rigidbody2D _rb;
     private Vector3 _newPosition;
     private int _positionIndex = 0;
+    private bool _shouldMove = true;
 
     void Start()
     {
@@ -19,12 +20,27 @@ public class FireflyFlight : MonoBehaviour
         StartCoroutine(RandomMove());
     }
 
-    void PositionChange()
+    void Update()     {
+        if (Vector2.Distance(transform.position, _newPosition) < .5f) {
+            PositionChange();
+        }
+        // transform.position = Vector3.Lerp(transform.position, _newPosition, Time.deltaTime * speed);
+        if (_shouldMove) transform.position = Vector3.MoveTowards(transform.position, _newPosition, Time.deltaTime * speed);
+
+    }
+
+    public void ActivateMovement()
+    {
+        _shouldMove = true;
+    }
+
+    private void PositionChange()
     {
         if (_positionIndex.Equals(positions.Count - 1)) _positionIndex = 0;
         else _positionIndex++;
         
         _newPosition = positions[_positionIndex].position;
+        if (_positionIndex > 1) _shouldMove = false;
     }
 
     private IEnumerator RandomMove()
@@ -37,14 +53,5 @@ public class FireflyFlight : MonoBehaviour
             transform.position = position;
             yield return new WaitForSeconds(Random.Range(0.2f, 0.3f));
         }
-    }
-
-    void Update()     {
-        if (Vector2.Distance(transform.position, _newPosition) < .5f)    {
-            PositionChange();
-        }
-        // transform.position = Vector3.Lerp(transform.position, _newPosition, Time.deltaTime * speed);
-        transform.position = Vector3.MoveTowards(transform.position, _newPosition, Time.deltaTime * speed);
-
     }
 }
