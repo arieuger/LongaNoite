@@ -53328,9 +53328,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundController: {fileID: 3745165214886210903}
-  dimensionBox: {x: 0.75, y: 0.15, z: 0}
+  dimensionBox: {x: 0.65, y: 0.15, z: 0}
   fallGravityScale: 4.5
   coyoteTime: 0.75
+  wallJumpTime: 0.4
+  wallSlideSpeed: 0.3
+  wallDistance: 0.38
   dashingPower: 35
   dashingTime: 0.15
   dashingCooldown: 1
@@ -58612,7 +58615,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.044452548}
+  m_Offset: {x: -0.008392334, y: 0.044452548}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -58623,7 +58626,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.54498875, y: 1.5310949}
+  m_Size: {x: 0.6811447, y: 1.5310949}
   m_EdgeRadius: 0
 --- !u!199 &2849454509222220549
 ParticleSystemRenderer:
@@ -63917,7 +63920,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 3
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 189cce7312c847e99a78dcf645dc385c, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -63926,7 +63929,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &7923470455656719999
 MonoBehaviour:

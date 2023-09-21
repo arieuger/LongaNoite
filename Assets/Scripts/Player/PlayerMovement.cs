@@ -34,6 +34,14 @@ public class PlayerMovement : MonoBehaviour
     private bool _jump;
     public bool Jump => _jump;
 
+    [Header("Wall Jumping")] 
+    [SerializeField] private float wallJumpTime = 0.2f;
+    [SerializeField] private float wallSlideSpeed = 0.3f;
+    [SerializeField] private float wallDistance = 0.5f;
+    private bool _isWallSliding = false;
+    private RaycastHit2D _wallCheckHit;
+    private float _jumpTime;
+
     // Dashing
     [Header ("Dashing")]
     [SerializeField] private float dashingPower = 24f;
@@ -94,6 +102,27 @@ public class PlayerMovement : MonoBehaviour
         // TODO: Health?
         _isGrounded = Physics2D.OverlapBox(groundController.position, dimensionBox, 0f, groundLayers);
         Move(_horizontalMovement * Time.fixedDeltaTime);
+        
+        // Wall Sliding and Jump
+        wallDistance = _lookingRight ? Mathf.Abs(wallDistance) : Mathf.Abs(wallDistance) * -1;
+        _wallCheckHit = Physics2D.Raycast(transform.position, new Vector2(wallDistance, 0), Mathf.Abs(wallDistance), groundLayers);
+        Debug.DrawRay(transform.position, new Vector2(wallDistance, 0), Color.red);
+        
+        if (_wallCheckHit && !_isGrounded && _horizontalMovement != 0)
+        {
+            _isWallSliding = true;
+            _jumpTime = Time.time + wallJumpTime;
+        } else if (_jumpTime < Time.time)
+        {
+            _isWallSliding = false;
+        }
+
+        if (_isWallSliding)
+        {
+            var velocity = _rb.velocity;
+            _rb.velocity = new Vector2(velocity.x, Mathf.Clamp(velocity.y, wallSlideSpeed, float.MaxValue));
+        }
+        
         CheckGravityScale();
     }
 
@@ -106,8 +135,11 @@ public class PlayerMovement : MonoBehaviour
     
     private void Move(float moving) {
         // Desplazamento
-        Vector3 targetVelocity = new Vector2(moving, _rb.velocity.y);
-        _rb.velocity = targetVelocity;
+        if (!_isWallSliding || _jump)
+        {
+            Vector3 targetVelocity = new Vector2(moving, _rb.velocity.y);
+            _rb.velocity = targetVelocity;
+        }
 
         // Xiro
         if (moving > 0 && !_lookingRight) Turn();
@@ -118,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
         else _footEmission.rateOverTime = 0f;
 
         // Salto
-        if (_jump && (_isGrounded || _coyoteTimeCounter > 0f)) {
+        if (_jump && ((_isGrounded || _coyoteTimeCounter > 0f) || _isWallSliding)) {
             _isGrounded = false;
             _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
             _coyoteTimeCounter = 0f;
@@ -129,6 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Turn() {
         _lookingRight = !_lookingRight;
+        _isWallSliding = false;
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
@@ -137,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void CheckGravityScale()
     {
-        _rb.gravityScale = _rb.velocity.y < -0.1f ? fallGravityScale : _defaultGravityScale;
+        _rb.gravityScale = _rb.velocity.y < -0.1f && !_isWallSliding ? fallGravityScale : _defaultGravityScale;
     }
 
     private IEnumerator Dash()
