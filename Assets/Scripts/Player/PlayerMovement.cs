@@ -153,9 +153,18 @@ public class PlayerMovement : MonoBehaviour
         else _footEmission.rateOverTime = 0f;
 
         // Salto
-        if (_jump && ((_isGrounded || _coyoteTimeCounter > 0f) || _isWallSliding)) {
+        if (_jump && ((_isGrounded || _coyoteTimeCounter > 0f) || _isWallSliding))
+        {
+            float xForce = 0;
+            if (_isWallSliding)
+            {
+                xForce = 5f * (_lookingRight ? -1f : 1f);
+                // Turn();
+                _isWallSliding = false;
+            }
+            
             _isGrounded = false;
-            _rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+            _rb.AddForce(new Vector2(xForce, jumpForce), ForceMode2D.Impulse);
             _coyoteTimeCounter = 0f;
             jumpEffect.Play();
         }
