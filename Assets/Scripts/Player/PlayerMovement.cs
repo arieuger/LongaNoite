@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _isWallSliding = true;
             _jumpTime = Time.time + wallJumpTime;
-        } else if (_jumpTime < Time.time)
+        } else if (_jumpTime < Time.time || _horizontalMovement == 0)
         {
             _isWallSliding = false;
         }
