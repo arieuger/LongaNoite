@@ -172,6 +172,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckGravityScale()
     {
         _rb.gravityScale = _rb.velocity.y < -0.1f && !_isWallSliding ? fallGravityScale : _defaultGravityScale;
+        CameraFollow.Instance.FollowFallingUpOrDown(_rb.velocity.y >= -0.1f);
     }
 
     private IEnumerator Dash()
