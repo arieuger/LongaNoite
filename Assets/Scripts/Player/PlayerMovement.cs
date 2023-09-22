@@ -120,7 +120,8 @@ public class PlayerMovement : MonoBehaviour
         if (_isWallSliding)
         {
             var velocity = _rb.velocity;
-            _rb.velocity = new Vector2(velocity.x, Mathf.Clamp(velocity.y, wallSlideSpeed, float.MaxValue));
+            _rb.velocity = new Vector2(velocity.x, Mathf.Clamp(velocity.y, -wallSlideSpeed, float.MaxValue));
+            // _rb.velocity = new Vector2(velocity.x, wallSlideSpeed);
         }
         
         CheckGravityScale();

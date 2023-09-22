@@ -53332,8 +53332,8 @@ MonoBehaviour:
   fallGravityScale: 4.5
   coyoteTime: 0.75
   wallJumpTime: 0.4
-  wallSlideSpeed: 0.3
-  wallDistance: 0.38
+  wallSlideSpeed: 2
+  wallDistance: 0.4
   dashingPower: 35
   dashingTime: 0.15
   dashingCooldown: 1
