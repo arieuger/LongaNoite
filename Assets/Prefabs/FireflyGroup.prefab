@@ -482,6 +482,9 @@ MonoBehaviour:
   - {fileID: 5317896725376919979}
   - {fileID: 2943227231452787377}
   - {fileID: 3986107394466308317}
+  platformLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &9171629480509787369
 GameObject:
   m_ObjectHideFlags: 0
