@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded => _isGrounded;
     private bool _jump;
     public bool Jump => _jump;
+    private bool _canJump = true;
 
     [Header("Wall Jumping")] 
     [SerializeField] private float wallJumpTime = 0.2f;
@@ -90,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
         if (_shouldMove) _horizontalMovement = Input.GetAxis("Horizontal") * movementSpeed;
         else _horizontalMovement = 0;
         
-        if (Input.GetButtonDown("Jump") && _shouldMove) _jump = true;
+        if (Input.GetButtonDown("Jump") && _shouldMove && _canJump) _jump = true;
         if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash) StartCoroutine(Dash()); // TODO: Key to Button
     
         if (_isGrounded) _coyoteTimeCounter = coyoteTime;
@@ -135,9 +136,21 @@ public class PlayerMovement : MonoBehaviour
         _animator.SetBool(IsDashing, _isDashing);
         _animator.SetBool(IsSliding, _isWallSliding);
     }
+
+    private IEnumerator CannotJump()
+    {
+        _canJump = false;
+        yield return new WaitForSeconds(.5f);
+        _canJump = true;
+    }
     
-    private void Move(float moving) {
-        // Desplazamento
+    private void Move(float moving)
+    {
+        if (_isWallSliding && _jump)
+        {
+            _rb.velocity = new Vector2(_rb.velocity.x, 0);
+            StartCoroutine(CannotJump());
+        }
         if (!_isWallSliding || _jump)
         {
             Vector3 targetVelocity = new Vector2(moving, _rb.velocity.y);
