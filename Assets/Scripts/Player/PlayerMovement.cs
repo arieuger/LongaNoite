@@ -64,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     private static readonly int VerticalMovement = Animator.StringToHash("verticalMovement");
     private static readonly int Grounded = Animator.StringToHash("isGrounded");
     private static readonly int IsDashing = Animator.StringToHash("isDashing");
+    private static readonly int IsSliding = Animator.StringToHash("isSliding");
 
     // Singleton
     public static PlayerMovement Instance { get; private set; }
@@ -129,9 +130,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimations() {
         _animator.SetFloat(Movement, Mathf.Abs(_horizontalMovement));
-        _animator.SetFloat(VerticalMovement, _isGrounded ? 0 : _rb.velocity.y);
+        _animator.SetFloat(VerticalMovement, _isGrounded || _isWallSliding ? 0 : _rb.velocity.y);
         _animator.SetBool(Grounded, _isGrounded);
         _animator.SetBool(IsDashing, _isDashing);
+        _animator.SetBool(IsSliding, _isWallSliding);
     }
     
     private void Move(float moving) {
