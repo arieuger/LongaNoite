@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerLightCollider : MonoBehaviour
 {
@@ -7,12 +8,13 @@ public class PlayerLightCollider : MonoBehaviour
     [SerializeField] private float aliveInDarkness = 10f;
     [SerializeField] private Color healthyColor;
     [SerializeField] private Color deadColor;
+    [SerializeField] private Image heartBar;
 
     private SpriteRenderer _sr;
     private PlayerLighter _playerLighter;
     private bool _isInDarkness;
     private Coroutine _lastRoutine;
-    private bool _IsRoutineRunning;
+    private bool _isRoutineRunning;
 
     private void Start()
     {
@@ -22,7 +24,7 @@ public class PlayerLightCollider : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag("Light") || _IsRoutineRunning) return;
+        if (!other.CompareTag("Light") || _isRoutineRunning) return;
         
         _isInDarkness = true;
         _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
@@ -39,23 +41,24 @@ public class PlayerLightCollider : MonoBehaviour
     public void WhenLighterSwitched(bool isLighterOn)
     {
         if (_isInDarkness && isLighterOn && _lastRoutine != null) StopCountDown();
-        else if (!isLighterOn && _isInDarkness && !_IsRoutineRunning) _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
+        else if (!isLighterOn && _isInDarkness && !_isRoutineRunning) _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
     }
 
     private void StopCountDown()
     {
-        if (!_IsRoutineRunning) return;
+        if (!_isRoutineRunning) return;
         
         StopCoroutine(_lastRoutine);
         _sr.color = healthyColor;
-        _IsRoutineRunning = false;
+        _isRoutineRunning = false;
+        heartBar.fillAmount = 1f;
     }
 
     private IEnumerator AliveInDarknessCountDown()
     {
-        if (_IsRoutineRunning) yield break;
+        if (_isRoutineRunning) yield break;
         
-        _IsRoutineRunning = true;
+        _isRoutineRunning = true;
         float normalizedTime = 0;
         yield return new WaitForSeconds(.75f);
 
@@ -64,9 +67,10 @@ public class PlayerLightCollider : MonoBehaviour
             normalizedTime += Time.deltaTime / aliveInDarkness;
             // Debug.Log(aliveInDarkness - aliveInDarkness * normalizedTime);
             _sr.color = Color.Lerp(healthyColor, deadColor, normalizedTime);
+            heartBar.fillAmount = 1f - normalizedTime;
             yield return null;
         }
 
-        _IsRoutineRunning = false;
+        _isRoutineRunning = false;
     }
 }
