@@ -24,7 +24,7 @@ public class PlayerLightCollider : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag("Light") || _isRoutineRunning) return;
+        if (!gameObject.activeSelf || !other.CompareTag("Light") || _isRoutineRunning) return;
         
         _isInDarkness = true;
         _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
@@ -60,7 +60,7 @@ public class PlayerLightCollider : MonoBehaviour
         
         _isRoutineRunning = true;
         float normalizedTime = 0;
-        yield return new WaitForSeconds(.75f);
+        yield return new WaitForSeconds(.25f);
 
         while (normalizedTime <= 1f)
         {

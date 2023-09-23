@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerLighter : MonoBehaviour
 {
@@ -10,6 +11,12 @@ public class PlayerLighter : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController animControllerWithLight;
     [SerializeField] private GameObject parentLights;
     [SerializeField] private float lighterTime = 5f;
+    [SerializeField] private float coolDownTime = 3f;
+    [SerializeField] private Image fireBar;
+    [SerializeField] private Image backgroundBar;
+    [SerializeField] private Color countdownColor;
+    [SerializeField] private Color coolDownColor;
+    [SerializeField] private Color BackgroundColor;
 
     private Animator _animator;
     private PlayerLightCollider _playerLightCollider;
@@ -37,9 +44,34 @@ public class PlayerLighter : MonoBehaviour
             parentLights.transform.GetChild(i).gameObject.SetActive(IsUsingLantern);
         }
 
+        if (_lastRoutine != null) StopCoroutine(_lastRoutine);
+
         if (IsUsingLantern) _lastRoutine = StartCoroutine(PlayerLighterCountDown());
-        else if (_lastRoutine != null) StopCoroutine(_lastRoutine);
+        else _lastRoutine = StartCoroutine(PlayerLighterCoolDown()); 
         _playerLightCollider.WhenLighterSwitched(IsUsingLantern);
+    }
+
+    private IEnumerator PlayerLighterCoolDown()
+    {
+        canUseLantern = false;
+        float normalizedTime = 0;
+        fireBar.fillOrigin = (int) Image.OriginHorizontal.Left;
+        fireBar.color = coolDownColor;
+        backgroundBar.color = countdownColor;
+        
+        while (normalizedTime <= 1f)
+        {
+            normalizedTime += Time.deltaTime / coolDownTime;
+            fireBar.fillAmount = 1f - normalizedTime;
+            yield return null;
+        }
+        fireBar.fillOrigin = (int) Image.OriginHorizontal.Right;
+        fireBar.color = countdownColor;
+        fireBar.fillAmount = 1f;
+        backgroundBar.color = BackgroundColor;
+        
+        canUseLantern = true;
+
     }
 
     private IEnumerator PlayerLighterCountDown()
@@ -49,6 +81,7 @@ public class PlayerLighter : MonoBehaviour
         while (normalizedTime <= 1f)
         {
             normalizedTime += Time.deltaTime / lighterTime;
+            fireBar.fillAmount = 1f - normalizedTime;
             yield return null;
         }
         SwitchLanternUse();
