@@ -115,18 +115,19 @@ public class PlayerMovement : MonoBehaviour
 
         WallSlide();
         Move(_horizontalMovement * Time.fixedDeltaTime);
-        
-        Debug.DrawRay(transform.position, new Vector2(0, .7f), Color.red);
-        Debug.Log(_rb.gravityScale);
-        if (Physics2D.Raycast(transform.position, Vector2.up, .7f, ladderLayer)  && !_jump)
+
+        RaycastHit2D raycastLadder = Physics2D.Raycast(transform.position, Vector2.up, .7f, ladderLayer);
+        if (raycastLadder  && !_jump)
         {
             _isClimbing = true;
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            transform.position = new Vector3(raycastLadder.collider.gameObject.transform.position.x, transform.position.y);
         }
         else _isClimbing = false;
 
         if (_isClimbing)
         {
-            _rb.velocity = new Vector2(_rb.velocity.x, Input.GetAxis("Vertical") * 8f);
+            _rb.velocity = new Vector2(_rb.velocity.x, Input.GetAxis("Vertical") * 6f);
             _rb.gravityScale = 0;
         }
         else
