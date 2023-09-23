@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 public class PlayerLighter : MonoBehaviour
 {
+    public bool IsUsingLantern { private set; get; }
+    
     [SerializeField] private bool canUseLantern;
     [SerializeField] private RuntimeAnimatorController animControllerNoLight;
     [SerializeField] private RuntimeAnimatorController animControllerWithLight;
@@ -12,8 +12,6 @@ public class PlayerLighter : MonoBehaviour
     [SerializeField] private float lighterTime = 5f;
 
     private Animator _animator;
-    public bool IsUsingLantern { private set; get; }
-
     private Coroutine _lastRoutine;
     
     private void Start()
@@ -48,7 +46,6 @@ public class PlayerLighter : MonoBehaviour
         while (normalizedTime <= 1f)
         {
             normalizedTime += Time.deltaTime / lighterTime;
-            // Debug.Log(aliveInDarkness - aliveInDarkness * normalizedTime);
             yield return null;
         }
         SwitchLanternUse();

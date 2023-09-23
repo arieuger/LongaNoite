@@ -45,7 +45,7 @@ public class FireflyFlight : MonoBehaviour
         else _positionIndex++;
         
         _newPosition = positions[_positionIndex].position;
-        if (_positionIndex > 1 && _positionIndex < positions.Count -1) _shouldMove = false;
+        if (_positionIndex > 1 && _positionIndex < positions.Count -2) _shouldMove = false;
         
     }
 
