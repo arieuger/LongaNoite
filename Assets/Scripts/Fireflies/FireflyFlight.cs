@@ -37,11 +37,21 @@ public class FireflyFlight : MonoBehaviour
 
     private void PositionChange()
     {
-        if (_positionIndex.Equals(positions.Count - 1)) _positionIndex = 0;
+        if (_positionIndex.Equals(positions.Count - 1))
+        {
+            _positionIndex = 0;
+            Invoke(nameof(DestroyGO), 1.5f);
+        }
         else _positionIndex++;
         
         _newPosition = positions[_positionIndex].position;
-        if (_positionIndex > 1) _shouldMove = false;
+        if (_positionIndex > 1 && _positionIndex < positions.Count -1) _shouldMove = false;
+        
+    }
+
+    private void DestroyGO()
+    {
+        Destroy(gameObject);
     }
 
     private IEnumerator RandomMove()
@@ -55,8 +65,6 @@ public class FireflyFlight : MonoBehaviour
 
             if (raycastHit2D)
             {
-                Debug.Log(raycastHit2D.distance);
-                Debug.Log(raycastHit2D.point + " - " + Vector2.ClampMagnitude(raycastHit2D.point, raycastHit2D.distance));
                 position = raycastHit2D.point - Vector2.ClampMagnitude(raycastHit2D.point, raycastHit2D.distance);
             }
                 
@@ -64,27 +72,5 @@ public class FireflyFlight : MonoBehaviour
             
             yield return new WaitForSeconds(Random.Range(0.2f, 0.3f));
         }
-        
-        /*
-                 while (true)
-           {
-           bool shouldRepeat;
-           Vector3 position;
-           
-           do
-           {
-           position = transform.position;
-           position = new Vector3(position.x + (Random.Range(-randomMovementRange, randomMovementRange)),
-           position.y + (Random.Range(-randomMovementRange, randomMovementRange)));
-           
-           shouldRepeat = Physics2D.OverlapBox(position, new Vector2(1, 1), 0, platformLayer);
-           
-           } while (shouldRepeat);
-           
-           transform.position = position;
-           yield return new WaitForSeconds(Random.Range(0.2f, 0.3f));
-           }
-         
-         */
     }
 }
