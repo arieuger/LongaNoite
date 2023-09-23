@@ -3923,6 +3923,48 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: dark-tileset-nb_181
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bfc12b99dce30d45a0f039c445f89a1
+      internalID: 651760942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dark-tileset-nb_182
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 160
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f73c7cae4ceb8ff6bd0d2ceac1e9365
+      internalID: -661155454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -4026,6 +4068,8 @@ TextureImporter:
       dark-tileset-nb_179: 330287841
       dark-tileset-nb_18: 1377535956
       dark-tileset-nb_180: 161625848
+      dark-tileset-nb_181: 651760942
+      dark-tileset-nb_182: -661155454
       dark-tileset-nb_19: 1397352795
       dark-tileset-nb_2: 709151195
       dark-tileset-nb_20: 1420479470

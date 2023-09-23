@@ -11,7 +11,8 @@ public class PlayerMovement : MonoBehaviour
     public float HorizontalMovement => _horizontalMovement;
     private Vector3 _velocity = Vector3.zero;
     private bool _lookingRight = true;
-
+    private bool _isClimbing;
+    
     private bool _shouldMove = true;
     public bool ShouldMove
     {
@@ -23,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     // Salto e suelo
     [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask groundLayers;
+    [SerializeField] private LayerMask ladderLayer;
     [SerializeField] private Transform groundController;
     [SerializeField] private Vector3 dimensionBox;
     [SerializeField] private float fallGravityScale;
@@ -75,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
         if (Instance != null && Instance != this) Destroy(this);
         else Instance = this;
     }
-    
+
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -93,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
         else _horizontalMovement = 0;
         
         if (Input.GetButtonDown("Jump") && _shouldMove && _canJump) _jump = true;
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash) StartCoroutine(Dash()); // TODO: Key to Button
+        if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash && _shouldMove) StartCoroutine(Dash()); // TODO: Key to Button
 
         if (_isGrounded)
         {
@@ -108,9 +110,29 @@ public class PlayerMovement : MonoBehaviour
         if (_isDashing) return;
         // TODO: Health?
         _isGrounded = Physics2D.OverlapBox(groundController.position, dimensionBox, 0f, groundLayers);
-        Move(_horizontalMovement * Time.fixedDeltaTime);
+
         WallSlide();
-        CheckGravityScale();
+        Move(_horizontalMovement * Time.fixedDeltaTime);
+        
+        Debug.DrawRay(transform.position, new Vector2(0, .7f), Color.red);
+        Debug.Log(_rb.gravityScale);
+        if (Physics2D.Raycast(transform.position, Vector2.up, .7f, ladderLayer)  && !_jump)
+        {
+            _isClimbing = true;
+        }
+        else _isClimbing = false;
+
+        if (_isClimbing)
+        {
+            _rb.velocity = new Vector2(_rb.velocity.x, Input.GetAxis("Vertical") * 8f);
+            _rb.gravityScale = 0;
+        }
+        else
+        {
+            CheckGravityScale();    
+        }
+
+        
     }
 
     private void UpdateAnimations() {
@@ -127,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         _canJump = true;
     }
-    
+
     private void Move(float moving)
     {
         if (_isWallSliding && _jump)
