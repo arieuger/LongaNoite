@@ -42,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _isWallSliding = false;
     private RaycastHit2D _wallCheckHit;
     private float _jumpTime;
+    private int _numberOfWallJumps = 0;
 
     // Dashing
     [Header ("Dashing")]
@@ -93,8 +94,12 @@ public class PlayerMovement : MonoBehaviour
         
         if (Input.GetButtonDown("Jump") && _shouldMove && _canJump) _jump = true;
         if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash) StartCoroutine(Dash()); // TODO: Key to Button
-    
-        if (_isGrounded) _coyoteTimeCounter = coyoteTime;
+
+        if (_isGrounded)
+        {
+            _coyoteTimeCounter = coyoteTime;
+            _numberOfWallJumps = 0;
+        }
         else _coyoteTimeCounter -= Time.deltaTime;
     }
 
@@ -104,28 +109,7 @@ public class PlayerMovement : MonoBehaviour
         // TODO: Health?
         _isGrounded = Physics2D.OverlapBox(groundController.position, dimensionBox, 0f, groundLayers);
         Move(_horizontalMovement * Time.fixedDeltaTime);
-        
-        // Wall Sliding and Jump
-        wallDistance = _lookingRight ? Mathf.Abs(wallDistance) : Mathf.Abs(wallDistance) * -1;
-        _wallCheckHit = Physics2D.Raycast(transform.position, new Vector2(wallDistance, 0), Mathf.Abs(wallDistance), groundLayers);
-        Debug.DrawRay(transform.position, new Vector2(wallDistance, 0), Color.red);
-        
-        if (_wallCheckHit && !_isGrounded && _horizontalMovement != 0)
-        {
-            _isWallSliding = true;
-            _jumpTime = Time.time + wallJumpTime;
-        } else if (_jumpTime < Time.time || _horizontalMovement == 0)
-        {
-            _isWallSliding = false;
-        }
-
-        if (_isWallSliding)
-        {
-            var velocity = _rb.velocity;
-            _rb.velocity = new Vector2(velocity.x, Mathf.Clamp(velocity.y, -wallSlideSpeed, float.MaxValue));
-            // _rb.velocity = new Vector2(velocity.x, wallSlideSpeed);
-        }
-        
+        WallSlide();
         CheckGravityScale();
     }
 
@@ -166,13 +150,13 @@ public class PlayerMovement : MonoBehaviour
         else _footEmission.rateOverTime = 0f;
 
         // Salto
-        if (_jump && ((_isGrounded || _coyoteTimeCounter > 0f) || _isWallSliding))
+        if (_jump && ((_isGrounded || _coyoteTimeCounter > 0f) || (_isWallSliding && _numberOfWallJumps < 1)))
         {
             float xForce = 0;
             if (_isWallSliding)
             {
+                _numberOfWallJumps++;
                 xForce = 5f * (_lookingRight ? -1f : 1f);
-                // Turn();
                 _isWallSliding = false;
             }
             
@@ -191,6 +175,32 @@ public class PlayerMovement : MonoBehaviour
         scale.x *= -1;
         transform.localScale = scale;
         CameraFollow.Instance.TurnCamera();
+    }
+
+   private void WallSlide()
+    {
+         
+        // Wall Sliding and Wall Jump
+        wallDistance = _lookingRight ? Mathf.Abs(wallDistance) : Mathf.Abs(wallDistance) * -1;
+        _wallCheckHit = Physics2D.Raycast(transform.position, new Vector2(wallDistance, 0), Mathf.Abs(wallDistance), groundLayers);
+        // Debug.DrawRay(transform.position, new Vector2(wallDistance, 0), Color.red);
+        
+        if (_wallCheckHit && !_isGrounded && _horizontalMovement != 0)
+        {
+            _isWallSliding = true;
+            _jumpTime = Time.time + wallJumpTime;
+        } else if (_jumpTime < Time.time || _horizontalMovement == 0)
+        {
+            _isWallSliding = false;
+            _numberOfWallJumps = 0;
+        }
+
+        if (_isWallSliding)
+        {
+            var velocity = _rb.velocity;
+            _rb.velocity = new Vector2(velocity.x, Mathf.Clamp(velocity.y, -wallSlideSpeed, float.MaxValue));
+            // _rb.velocity = new Vector2(velocity.x, wallSlideSpeed);
+        }
     }
     
     private void CheckGravityScale()
