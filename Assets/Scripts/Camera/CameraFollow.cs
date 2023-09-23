@@ -48,11 +48,12 @@ public class CameraFollow : MonoBehaviour
 
     public void FollowFallingUpOrDown(bool up)
     {
-        if (up)
+        if (up && cinemachineFramingTransposer.m_TrackedObjectOffset.y < 0)
             cinemachineFramingTransposer.m_TrackedObjectOffset.y =
                 Mathf.Abs(cinemachineFramingTransposer.m_TrackedObjectOffset.y);
         
-        else cinemachineFramingTransposer.m_TrackedObjectOffset.y *= -1f;
+        else if (!up && cinemachineFramingTransposer.m_TrackedObjectOffset.y > 0)
+            cinemachineFramingTransposer.m_TrackedObjectOffset.y *= -1f;
     }
 
     public void ChangeTarget(Transform target)
