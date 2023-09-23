@@ -12,6 +12,7 @@ public class PlayerLightCollider : MonoBehaviour
     private PlayerLighter _playerLighter;
     private bool _isInDarkness;
     private Coroutine _lastRoutine;
+    private bool _IsRoutineRunning;
 
     private void Start()
     {
@@ -21,26 +22,43 @@ public class PlayerLightCollider : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Light") && !_playerLighter.IsUsingLantern)
-        {
-            _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
-        }
+        if (!other.CompareTag("Light") || _IsRoutineRunning) return;
+        
+        _isInDarkness = true;
+        _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag("Light") && _lastRoutine != null)
-        {
-            StopCoroutine(_lastRoutine);
-            _sr.color = healthyColor;
-        }
+        if (!other.CompareTag("Light") || _lastRoutine == null) return;
+        
+        _isInDarkness = false;
+        StopCountDown();
+    }
+
+    public void WhenLighterSwitched(bool isLighterOn)
+    {
+        if (_isInDarkness && isLighterOn && _lastRoutine != null) StopCountDown();
+        else if (!isLighterOn && _isInDarkness && !_IsRoutineRunning) _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
+    }
+
+    private void StopCountDown()
+    {
+        if (!_IsRoutineRunning) return;
+        
+        StopCoroutine(_lastRoutine);
+        _sr.color = healthyColor;
+        _IsRoutineRunning = false;
     }
 
     private IEnumerator AliveInDarknessCountDown()
     {
+        if (_IsRoutineRunning) yield break;
+        
+        _IsRoutineRunning = true;
         float normalizedTime = 0;
         yield return new WaitForSeconds(.75f);
-        
+
         while (normalizedTime <= 1f)
         {
             normalizedTime += Time.deltaTime / aliveInDarkness;
@@ -48,6 +66,7 @@ public class PlayerLightCollider : MonoBehaviour
             _sr.color = Color.Lerp(healthyColor, deadColor, normalizedTime);
             yield return null;
         }
-        Debug.Log("Se murió!!!");
+
+        _IsRoutineRunning = false;
     }
 }

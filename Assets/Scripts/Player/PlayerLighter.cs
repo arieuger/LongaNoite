@@ -12,11 +12,13 @@ public class PlayerLighter : MonoBehaviour
     [SerializeField] private float lighterTime = 5f;
 
     private Animator _animator;
+    private PlayerLightCollider _playerLightCollider;
     private Coroutine _lastRoutine;
-    
+
     private void Start()
     {
         _animator = GetComponent<Animator>();
+        _playerLightCollider = GetComponent<PlayerLightCollider>();
     }
 
     private void Update()
@@ -37,6 +39,7 @@ public class PlayerLighter : MonoBehaviour
 
         if (IsUsingLantern) _lastRoutine = StartCoroutine(PlayerLighterCountDown());
         else if (_lastRoutine != null) StopCoroutine(_lastRoutine);
+        _playerLightCollider.WhenLighterSwitched(IsUsingLantern);
     }
 
     private IEnumerator PlayerLighterCountDown()
