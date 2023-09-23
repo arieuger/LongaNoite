@@ -12,27 +12,29 @@ public class PlayerLightCollider : MonoBehaviour
     [SerializeField] private Color deadColor;
 
     private SpriteRenderer _sr;
+    private PlayerLighter _playerLighter;
     private bool _isInDarkness;
-    private Coroutine lastRoutine = null;
+    private Coroutine _lastRoutine;
 
     private void Start()
     {
+        _playerLighter = GetComponent<PlayerLighter>();
         _sr = GetComponent<SpriteRenderer>();
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Light"))
+        if (other.CompareTag("Light") && !_playerLighter.IsUsingLantern)
         {
-            lastRoutine = StartCoroutine(AliveInDarknessCountDown());
+            _lastRoutine = StartCoroutine(AliveInDarknessCountDown());
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Light") && lastRoutine != null)
+        if (other.CompareTag("Light") && _lastRoutine != null)
         {
-            StopCoroutine(lastRoutine);
+            StopCoroutine(_lastRoutine);
             _sr.color = healthyColor;
         }
     }
@@ -40,6 +42,8 @@ public class PlayerLightCollider : MonoBehaviour
     private IEnumerator AliveInDarknessCountDown()
     {
         float normalizedTime = 0;
+        yield return new WaitForSeconds(.75f);
+        
         while (normalizedTime <= 1f)
         {
             normalizedTime += Time.deltaTime / aliveInDarkness;
