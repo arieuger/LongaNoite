@@ -30,7 +30,7 @@ public class PlayerLighter : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S) && canUseLantern) SwitchLanternUse();
+        if (Input.GetButtonDown("Fire") && canUseLantern) SwitchLanternUse();
     }
 
     private void SwitchLanternUse()

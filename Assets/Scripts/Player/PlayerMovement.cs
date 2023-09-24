@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
         else _horizontalMovement = 0;
         
         if (Input.GetButtonDown("Jump") && _shouldMove && _canJump) _jump = true;
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash && _shouldMove) StartCoroutine(Dash()); // TODO: Key to Button
+        if (Input.GetButtonDown("Dash") && _canDash && _shouldMove) StartCoroutine(Dash()); 
 
         if (_isGrounded)
         {
